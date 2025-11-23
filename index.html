@@ -127,9 +127,9 @@
                             <Brain className="w-8 h-8 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-black text-white tracking-tight">AI 智慧選股決策系統</h1>
+                            <h1 className="text-2xl font-black text-white tracking-tight">AI 智慧選股系統</h1>
                             <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-slate-400">
-                                V18.0 <span className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">旗艦獲利版</span>
+                                V18.0 <span className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">V1版</span>
                             </div>
                         </div>
                     </div>
@@ -190,7 +190,7 @@
                         {regime || "等待數據..."}
                     </div>
                     <div className="text-sm text-slate-400 leading-relaxed">
-                        AI 綜合分析 VIX 恐慌指數、美股動向與台股籌碼，即時判讀市場多空風向。
+                        AI 綜合分析美股動向、台股籌碼及全球財經新聞，即時判讀市場多空風向。
                     </div>
                 </div>
 
@@ -216,7 +216,7 @@
             const isPositive = stock.predictedChange > 0;
             
             // ★★★ 這裡修改了標籤名稱 ★★★
-            const typeText = type === 'conservative' ? '防禦型' : type === 'balanced' ? '穩健型' : '攻擊型';
+            const typeText = type === 'conservative' ? '防禦型' : type === 'balanced' ? '穩健型' : '積極型';
             
             const badgeConfig = 
                 type === 'conservative' ? { color: 'bg-blue-500', text: typeText, border: 'border-blue-500/30' } :
