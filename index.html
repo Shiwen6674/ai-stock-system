@@ -27,6 +27,7 @@
             background-color: #0f172a; 
             color: #f1f5f9; 
             margin: 0;
+            padding: 0;
             overflow-x: hidden;
         }
         .font-mono { font-family: 'Roboto Mono', monospace; }
@@ -99,16 +100,31 @@
             Microscope: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>
         };
 
-        // ⚠️ 您的 API 網址 (使用 /exec 結尾的永久網址)
+        const { 
+            TrendingUp, TrendingDown, Activity, Shield, Zap, Target, 
+            RefreshCw, Brain, PieChart, CheckCircle2, 
+            ArrowUpRight, ArrowDownRight, AlertTriangle, Wifi, WifiOff, 
+            BarChart4, Lock, Search, History, Microscope, X
+        } = Icons;
+
+        // ⚠️ 您的真實 API 網址
         const API_URL = "https://script.google.com/macros/s/AKfycbzpzgLsDH0tXDOHgKuGmgj8R5LAPmOMaa4uDbTeyIhMfE4Q00qKcG3czYzs5ppsBWsIaQ/exec"; 
+
+        // --- 組件設計 ---
 
         const Header = ({ onUpdate, isUpdating, lastUpdated, onSearch, setView, view }) => {
             const [searchInput, setSearchInput] = useState("");
+
+            const handleSearch = (e) => {
+                e.preventDefault();
+                if(searchInput.trim()) onSearch(searchInput);
+            };
+
             return (
                 <header className="flex flex-col lg:flex-row justify-between items-center p-6 border-b border-slate-700 bg-slate-900/95 sticky top-0 z-50 backdrop-blur-md">
                     <div className="flex items-center gap-4 mb-4 lg:mb-0 cursor-pointer" onClick={() => setView('prediction')}>
                         <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-500/20">
-                            <Icons.Brain className="w-8 h-8 text-white" />
+                            <Brain className="w-8 h-8 text-white" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-black text-white tracking-tight">AI 智慧選股決策系統</h1>
@@ -117,20 +133,44 @@
                             </div>
                         </div>
                     </div>
+
                     <div className="flex flex-col md:flex-row items-center gap-4">
                         <div className="flex bg-slate-800/50 p-1 rounded-xl border border-slate-700">
-                            <button onClick={() => setView('prediction')} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors flex items-center gap-2 ${view === 'prediction' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}><Icons.Zap className="w-4 h-4" /> 今日預測</button>
-                            <button onClick={() => setView('history')} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors flex items-center gap-2 ${view === 'history' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}><Icons.History className="w-4 h-4" /> 績效回測</button>
-                        </div>
-                        <form onSubmit={(e) => {e.preventDefault(); if(searchInput.trim()) onSearch(searchInput);}} className="relative group w-full md:w-auto">
-                            <input type="text" placeholder="輸入代號診斷 (如 2330)" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="bg-slate-800 text-white text-sm rounded-xl pl-10 pr-4 py-2.5 border border-slate-700 focus:outline-none focus:border-indigo-500 w-full md:w-64" />
-                            <Icons.Search className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
-                        </form>
-                        <div className="flex flex-col items-end">
-                            <button onClick={onUpdate} disabled={isUpdating} className={`group flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border ${isUpdating ? 'bg-slate-800 text-slate-500 border-slate-700 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-500 shadow-lg'}`}>
-                                <Icons.RefreshCw className={`w-4 h-4 ${isUpdating ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} /> {isUpdating ? '分析中...' : '執行預測'}
+                            <button onClick={() => setView('prediction')} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors flex items-center gap-2 ${view === 'prediction' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}>
+                                <Zap className="w-4 h-4" /> 今日預測
                             </button>
-                            <div className="text-[10px] font-mono text-slate-500 mt-1">更新: <span className="text-emerald-400">{lastUpdated}</span></div>
+                            <button onClick={() => setView('history')} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors flex items-center gap-2 ${view === 'history' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}>
+                                <History className="w-4 h-4" /> 績效回測
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSearch} className="relative group w-full md:w-auto">
+                            <input 
+                                type="text" 
+                                placeholder="輸入代號診斷 (如 2330)" 
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                className="bg-slate-800 text-white text-sm rounded-xl pl-10 pr-4 py-2.5 border border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-full md:w-64 transition-all"
+                            />
+                            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                        </form>
+
+                        <div className="flex flex-col items-end">
+                            <button 
+                                onClick={onUpdate}
+                                disabled={isUpdating}
+                                className={`group flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 border ${
+                                    isUpdating 
+                                    ? 'bg-slate-800 text-slate-500 border-slate-700 cursor-wait' 
+                                    : 'bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/25'
+                                }`}
+                            >
+                                <RefreshCw className={`w-4 h-4 ${isUpdating ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                                {isUpdating ? 'AI 分析中...' : '執行每日預測'}
+                            </button>
+                            <div className="text-[10px] font-mono text-slate-500 mt-1">
+                                更新: <span className="text-emerald-400">{lastUpdated}</span>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -139,63 +179,111 @@
 
         const StrategyBoard = ({ regime, focus }) => (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 animate-fade-in-up">
-                <div className="md:col-span-5 glass-card p-6 rounded-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-6 opacity-10"><Icons.Activity className="w-32 h-32 text-indigo-400" /></div>
-                    <div className="flex items-center gap-2 text-indigo-400 mb-3 font-bold text-xs uppercase tracking-widest"><Icons.BarChart4 className="w-4 h-4" /> Market Regime</div>
-                    <div className="text-3xl font-black text-white mb-2 leading-tight">{regime || "等待數據..."}</div>
-                    <div className="text-sm text-slate-400 leading-relaxed">AI 綜合分析 VIX 恐慌指數、美股動向與台股籌碼，即時判讀市場多空風向。</div>
+                <div className="md:col-span-5 bg-slate-800/40 backdrop-blur-md border border-slate-700 p-6 rounded-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-500 transform group-hover:scale-110">
+                        <Activity className="w-32 h-32 text-indigo-400" />
+                    </div>
+                    <div className="flex items-center gap-2 text-indigo-400 mb-3 font-bold text-xs uppercase tracking-widest">
+                        <BarChart4 className="w-4 h-4" /> Market Regime
+                    </div>
+                    <div className="text-3xl font-black text-white mb-2 leading-tight tracking-tight">
+                        {regime || "等待數據..."}
+                    </div>
+                    <div className="text-sm text-slate-400 leading-relaxed">
+                        AI 綜合分析 VIX 恐慌指數、美股動向與台股籌碼，即時判讀市場多空風向。
+                    </div>
                 </div>
-                <div className="md:col-span-7 glass-card p-6 rounded-2xl border-l-4 border-l-emerald-500">
-                    <div className="absolute top-0 right-0 p-6 opacity-10"><Icons.Target className="w-32 h-32 text-emerald-400" /></div>
-                    <div className="flex items-center gap-2 text-emerald-400 mb-3 font-bold text-xs uppercase tracking-widest"><Icons.Lock className="w-4 h-4" /> Core Strategy</div>
-                    <div className="text-xl font-bold text-slate-100 mb-3 leading-relaxed">{focus || "系統待命中，請點擊右上角按鈕啟動。"}</div>
-                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20"><span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span><span className="text-xs font-bold text-emerald-400">V18 自我修正模型已啟用</span></div>
+
+                <div className="md:col-span-7 bg-slate-800/40 backdrop-blur-md border border-slate-700 p-6 rounded-2xl relative overflow-hidden group border-l-4 border-l-emerald-500">
+                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+                        <Target className="w-32 h-32 text-emerald-400" />
+                    </div>
+                    <div className="flex items-center gap-2 text-emerald-400 mb-3 font-bold text-xs uppercase tracking-widest">
+                        <Lock className="w-4 h-4" /> Core Strategy
+                    </div>
+                    <div className="text-xl font-bold text-slate-100 mb-3 leading-relaxed">
+                        {focus || "系統待命中，請點擊右上角按鈕啟動。"}
+                    </div>
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span className="text-xs font-bold text-emerald-400">V18 自我修正模型已啟用</span>
+                    </div>
                 </div>
             </div>
         );
 
         const StockCard = ({ stock, type }) => {
             const isPositive = stock.predictedChange > 0;
-            const textColor = type === 'conservative' ? 'text-blue-400' : type === 'balanced' ? 'text-violet-400' : 'text-rose-400';
-            const borderColor = type === 'conservative' ? 'border-blue-500/30' : type === 'balanced' ? 'border-violet-500/30' : 'border-rose-500/30';
-            const bgColor = type === 'conservative' ? 'bg-blue-500/5' : type === 'balanced' ? 'bg-violet-500/5' : 'bg-rose-500/5';
             
+            // ★★★ 這裡修改了標籤名稱 ★★★
+            const typeText = type === 'conservative' ? '防禦型' : type === 'balanced' ? '穩健型' : '攻擊型';
+            
+            const badgeConfig = 
+                type === 'conservative' ? { color: 'bg-blue-500', text: typeText, border: 'border-blue-500/30' } :
+                type === 'balanced' ? { color: 'bg-violet-500', text: typeText, border: 'border-violet-500/30' } :
+                { color: 'bg-rose-500', text: typeText, border: 'border-rose-500/30' };
+                
+            const textColor = type === 'conservative' ? 'text-blue-400' : type === 'balanced' ? 'text-violet-400' : 'text-rose-400';
+            const bgColor = type === 'conservative' ? 'bg-blue-500/5' : type === 'balanced' ? 'bg-violet-500/5' : 'bg-rose-500/5';
+
             return (
                 <div className={`glass-card rounded-2xl overflow-hidden hover:border-slate-400 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group ${bgColor} ${borderColor} animate-fade-in-up`}>
                     <div className="p-5 pb-2">
                         <div className="flex justify-between items-start mb-2">
                             <div className="flex items-center gap-3">
                                 <span className="font-mono text-3xl font-black text-white tracking-tighter">{stock.id}</span>
-                                <span className={`text-[10px] font-bold px-2 py-1 rounded border bg-opacity-20 uppercase tracking-wider ${textColor} ${borderColor.replace('/30','/50')}`}>
-                                    {type === 'conservative' ? '防禦型' : type === 'balanced' ? '平衡型' : '攻擊型'}
+                                <span className={`text-[10px] font-bold px-2 py-1 rounded border bg-opacity-20 uppercase tracking-wider ${textColor} ${badgeConfig.border}`}>
+                                    {badgeConfig.text}
                                 </span>
                             </div>
                             <div className={`flex flex-col items-end ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
                                 <div className="flex items-center gap-1 text-2xl font-black font-mono">
-                                    {isPositive ? <Icons.ArrowUpRight className="w-6 h-6" /> : <Icons.ArrowDownRight className="w-6 h-6" />}
+                                    {isPositive ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownRight className="w-6 h-6" />}
                                     {stock.predictedChange}%
                                 </div>
-                                <div className="text-[10px] font-bold text-slate-500 uppercase">AI 預測</div>
+                                <div className="text-[10px] font-bold text-slate-500 uppercase">AI 預測漲跌</div>
                             </div>
                         </div>
                         <div className="text-lg font-bold text-slate-200 mb-4">{stock.name}</div>
+                        
                         <div className="grid grid-cols-2 gap-3 mb-4">
-                            <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50"><div className="text-xs text-slate-500 font-bold mb-1">參考市價</div><div className="text-2xl font-mono font-bold text-white">{stock.price}</div></div>
-                            <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50"><div className="text-xs text-slate-500 font-bold mb-1">AI 信心度</div><div className="text-2xl font-mono font-bold text-indigo-400">{stock.confidence}%</div></div>
+                            <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50">
+                                <div className="text-xs text-slate-500 font-bold mb-1">參考市價 (Ref)</div>
+                                <div className="text-2xl font-mono font-bold text-white">{stock.price}</div>
+                            </div>
+                            <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50">
+                                <div className="text-xs text-slate-500 font-bold mb-1">AI 信心度</div>
+                                <div className="text-2xl font-mono font-bold text-indigo-400">{stock.confidence}%</div>
+                            </div>
                         </div>
+
                         {stock.setup && (
                             <div className="bg-slate-800/80 rounded-xl border border-slate-700/50 overflow-hidden mb-4">
                                 <div className="grid grid-cols-3 divide-x divide-slate-700/50">
-                                    <div className="p-2 text-center hover:bg-slate-700"><span className="text-[10px] text-slate-400 block font-bold mb-0.5">建議進場</span><span className="text-base font-mono font-bold text-emerald-400 block">{stock.setup.entry}</span></div>
-                                    <div className="p-2 text-center hover:bg-slate-700"><span className="text-[10px] text-slate-400 block font-bold mb-0.5">嚴設停損</span><span className="text-base font-mono font-bold text-rose-400 block">{stock.setup.stop}</span></div>
-                                    <div className="p-2 text-center hover:bg-slate-700"><span className="text-[10px] text-slate-400 block font-bold mb-0.5">預估獲利</span><span className="text-base font-mono font-bold text-indigo-400 block">{stock.setup.target}</span></div>
+                                    <div className="p-2 text-center hover:bg-slate-700 transition-colors">
+                                        <span className="text-[10px] text-slate-400 block font-bold mb-0.5">建議進場</span>
+                                        <span className="text-base font-mono font-bold text-emerald-400 block">{stock.setup.entry}</span>
+                                    </div>
+                                    <div className="p-2 text-center hover:bg-slate-700 transition-colors">
+                                        <span className="text-[10px] text-slate-400 block font-bold mb-0.5">嚴設停損</span>
+                                        <span className="text-base font-mono font-bold text-rose-400 block">{stock.setup.stop}</span>
+                                    </div>
+                                    <div className="p-2 text-center hover:bg-slate-700 transition-colors">
+                                        <span className="text-[10px] text-slate-400 block font-bold mb-0.5">預估獲利</span>
+                                        <span className="text-base font-mono font-bold text-indigo-400 block">{stock.setup.target}</span>
+                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
+
                     <div className="px-5 py-4 bg-slate-900/40 border-t border-slate-700/50 flex-grow">
-                        <div className="flex items-center gap-2 text-xs font-bold text-indigo-300 mb-2 uppercase tracking-wider"><Icons.Brain className="w-3 h-3" /> AI 分析觀點</div>
-                        <p className="text-sm text-slate-300 leading-relaxed text-justify font-medium">{stock.reason}</p>
+                        <div className="flex items-center gap-2 text-xs font-bold text-indigo-300 mb-2 uppercase tracking-wider">
+                            <Brain className="w-3 h-3" /> AI 分析觀點
+                        </div>
+                        <p className="text-sm text-slate-300 leading-relaxed text-justify font-medium">
+                            {stock.reason}
+                        </p>
                     </div>
                 </div>
             );
@@ -205,26 +293,61 @@
             if (!data) return null;
             const isBullish = data.prediction === "上漲";
             const colorClass = isBullish ? "text-emerald-400" : data.prediction === "下跌" ? "text-rose-400" : "text-yellow-400";
+            
             return (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-fade-in-up">
                     <div className="glass-card rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative border-slate-600">
-                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 hover:bg-slate-700 rounded-full"><Icons.X className="w-6 h-6" /></button>
+                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 hover:bg-slate-700 rounded-full transition-colors">
+                            <X className="w-6 h-6" />
+                        </button>
+                        
                         <div className="p-6 border-b border-slate-700 bg-slate-800/50">
-                            <div className="flex items-center gap-3 mb-2"><span className="text-[10px] font-bold bg-indigo-500 text-white px-2 py-0.5 rounded shadow-lg">AI 深度診斷</span><span className="text-slate-400 text-sm font-mono font-bold">{data.id}</span></div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="text-[10px] font-bold bg-indigo-500 text-white px-2 py-0.5 rounded shadow-lg shadow-indigo-500/20">AI 深度診斷</span>
+                                <span className="text-slate-400 text-sm font-mono font-bold">{data.id}</span>
+                            </div>
                             <h2 className="text-2xl font-bold text-white">{data.name || "個股診斷報告"}</h2>
                         </div>
+
                         <div className="p-6 space-y-6">
                             <div className="flex justify-between items-center bg-slate-900/50 p-5 rounded-xl border border-slate-700">
-                                <div className="text-center"><div className="text-xs font-bold text-slate-500 mb-1 uppercase">AI 預測方向</div><div className={`text-3xl font-black ${colorClass}`}>{data.prediction}</div></div>
+                                <div className="text-center">
+                                    <div className="text-xs font-bold text-slate-500 mb-1 uppercase">AI 預測方向</div>
+                                    <div className={`text-3xl font-black ${colorClass}`}>{data.prediction}</div>
+                                </div>
                                 <div className="w-px h-10 bg-slate-700"></div>
-                                <div className="text-center"><div className="text-xs font-bold text-slate-500 mb-1 uppercase">發生機率</div><div className="text-3xl font-mono font-black text-white">{data.probability}%</div></div>
+                                <div className="text-center">
+                                    <div className="text-xs font-bold text-slate-500 mb-1 uppercase">發生機率</div>
+                                    <div className="text-3xl font-mono font-black text-white">{data.probability}%</div>
+                                </div>
                             </div>
-                            <div className="space-y-3"><div className="flex items-center gap-2 text-sm font-bold text-slate-200 uppercase tracking-wide"><Icons.Microscope className="w-4 h-4 text-indigo-400" /> 診斷分析報告</div><div className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 p-4 rounded-xl border border-slate-700/50">{data.analysis}</div></div>
+
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2 text-sm font-bold text-slate-200 uppercase tracking-wide">
+                                    <Microscope className="w-4 h-4 text-indigo-400" /> 診斷分析報告
+                                </div>
+                                <div className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 p-4 rounded-xl border border-slate-700/50">
+                                    {data.analysis}
+                                </div>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-center"><div className="text-xs font-bold text-slate-500 mb-1">支撐參考</div><div className="text-xl font-mono font-bold text-emerald-500">{data.support}</div></div>
-                                <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-center"><div className="text-xs font-bold text-slate-500 mb-1">壓力參考</div><div className="text-xl font-mono font-bold text-rose-500">{data.resistance}</div></div>
+                                <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-center">
+                                    <div className="text-xs font-bold text-slate-500 mb-1">支撐參考</div>
+                                    <div className="text-xl font-mono font-bold text-emerald-500">{data.support}</div>
+                                </div>
+                                <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-center">
+                                    <div className="text-xs font-bold text-slate-500 mb-1">壓力參考</div>
+                                    <div className="text-xl font-mono font-bold text-rose-500">{data.resistance}</div>
+                                </div>
                             </div>
-                            <div className="text-center"><div className="text-xs font-bold text-slate-500 mb-2 uppercase">建議操作</div><div className="text-xl font-black text-indigo-400 bg-indigo-500/10 py-2 rounded-lg border border-indigo-500/20">{data.action}</div></div>
+                            
+                            <div className="text-center">
+                                <div className="text-xs font-bold text-slate-500 mb-2 uppercase">建議操作</div>
+                                <div className="text-xl font-black text-indigo-400 bg-indigo-500/10 py-2 rounded-lg border border-indigo-500/20">
+                                    {data.action}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -233,7 +356,13 @@
 
         const HistoryView = ({ historyData }) => (
             <div className="animate-fade-in-up">
-                <div className="flex items-center gap-3 mb-6"><div className="bg-slate-800 p-2 rounded-lg"><Icons.History className="w-6 h-6 text-indigo-400" /></div><h2 className="text-2xl font-bold text-white">AI 學習與績效回測</h2></div>
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-slate-800 p-2 rounded-lg">
+                        <History className="w-6 h-6 text-indigo-400" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white">AI 學習與績效回測</h2>
+                </div>
+
                 <div className="glass-card p-6 rounded-2xl mb-8">
                     <h3 className="text-sm font-bold text-slate-400 mb-6 uppercase tracking-widest">近 7 日準確率走勢</h3>
                     <div className="h-[300px] w-full">
@@ -242,16 +371,46 @@
                                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                                 <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
                                 <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} unit="%" domain={[0, 100]} />
-                                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc' }} itemStyle={{ color: '#818cf8' }} />
-                                <Line type="monotone" dataKey="accuracy" stroke="#6366f1" strokeWidth={3} name="準確率" dot={{ r: 4, fill: '#6366f1' }} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc', borderRadius: '8px' }}
+                                    itemStyle={{ color: '#818cf8' }}
+                                />
+                                <Line type="monotone" dataKey="accuracy" stroke="#6366f1" strokeWidth={3} name="準確率" dot={{ r: 4, fill: '#6366f1', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
+
                 <div className="glass-card rounded-2xl overflow-hidden">
-                    <div className="p-4 bg-slate-900/50 border-b border-slate-700/50"><h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">AI 自我反省日誌</h3></div>
+                    <div className="p-4 bg-slate-900/50 border-b border-slate-700/50">
+                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">AI 自我反省日誌</h3>
+                    </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm"><thead className="bg-slate-900/30 text-xs uppercase font-bold text-slate-500 border-b border-slate-700/50"><tr><th className="px-6 py-4">日期</th><th className="px-6 py-4 text-center">準確率</th><th className="px-6 py-4">檢討與參數修正</th></tr></thead><tbody className="divide-y divide-slate-700/50 text-slate-300">{historyData.map((item, index) => (<tr key={index} className="hover:bg-slate-800/30 transition-colors"><td className="px-6 py-4 font-mono text-slate-400">{item.date}</td><td className="px-6 py-4 text-center"><span className={`px-2.5 py-1 rounded-md text-xs font-bold ${item.accuracy >= 60 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>{item.accuracy}%</span></td><td className="px-6 py-4">{item.reason}</td></tr>))}{historyData.length === 0 && <tr><td colSpan="3" className="px-6 py-12 text-center text-slate-500 italic">尚無歷史檢核資料，系統學習中...</td></tr>}</tbody></table>
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-slate-900/30 text-xs uppercase font-bold text-slate-500 border-b border-slate-700/50">
+                                <tr>
+                                    <th className="px-6 py-4">日期</th>
+                                    <th className="px-6 py-4 text-center">準確率</th>
+                                    <th className="px-6 py-4">檢討與參數修正</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-700/50 text-slate-300">
+                                {historyData.map((item, index) => (
+                                    <tr key={index} className="hover:bg-slate-800/30 transition-colors">
+                                        <td className="px-6 py-4 font-mono whitespace-nowrap text-slate-400">{item.date}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${item.accuracy >= 60 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                                                {item.accuracy}%
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 leading-relaxed">{item.reason}</td>
+                                    </tr>
+                                ))}
+                                {historyData.length === 0 && (
+                                    <tr><td colSpan="3" className="px-6 py-12 text-center text-slate-500 italic">尚無歷史檢核資料，系統學習中...</td></tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -266,6 +425,7 @@
             const [strategyFocus, setStrategyFocus] = useState('');
             const [data, setData] = useState({ conservative: [], balanced: [], aggressive: [] });
             const [history, setHistory] = useState([]);
+            
             const [diagnosisData, setDiagnosisData] = useState(null);
             const [isDiagnosing, setIsDiagnosing] = useState(false);
 
@@ -299,8 +459,9 @@
 
             useEffect(() => { if (!API_URL.includes("YOUR_SCRIPT_ID")) fetchData(); }, []);
 
+            // ★★★ 修改了這裡的文字顯示 ★★★
             const getTabStyle = (tabName) => {
-                const base = "flex-1 px-4 py-3 font-bold text-sm transition-all duration-300 ";
+                const base = "flex-1 px-4 py-3 font-bold text-sm transition-all duration-300 rounded-lg ";
                 if (activeTab === tabName) {
                     if (tabName === 'conservative') return `${base} bg-blue-600 text-white shadow-lg shadow-blue-500/30`;
                     if (tabName === 'balanced') return `${base} bg-violet-600 text-white shadow-lg shadow-violet-500/30`;
@@ -330,9 +491,10 @@
                                         <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
                                             <h2 className="text-2xl font-bold text-white flex items-center gap-3"><Icons.Zap className="w-6 h-6 text-yellow-400 fill-yellow-400" /> 精選標的 (Alpha Picks)</h2>
                                             <div className="flex w-full md:w-auto bg-slate-800 p-1 rounded-xl">
-                                                <button onClick={() => setActiveTab('conservative')} className={`rounded-lg ${getTabStyle('conservative')}`}>保守型</button>
-                                                <button onClick={() => setActiveTab('balanced')} className={`rounded-lg ${getTabStyle('balanced')}`}>穩健型</button>
-                                                <button onClick={() => setActiveTab('aggressive')} className={`rounded-lg ${getTabStyle('aggressive')}`}>積極型</button>
+                                                {/* ★★★ 修改按鈕文字 ★★★ */}
+                                                <button onClick={() => setActiveTab('conservative')} className={getTabStyle('conservative')}>防禦型</button>
+                                                <button onClick={() => setActiveTab('balanced')} className={getTabStyle('balanced')}>穩健型</button>
+                                                <button onClick={() => setActiveTab('aggressive')} className={getTabStyle('aggressive')}>攻擊型</button>
                                             </div>
                                         </div>
                                         {data[activeTab] && data[activeTab].length > 0 ? (
